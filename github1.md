@@ -121,3 +121,58 @@ Because your `package.json` is at the repo root (`~/Desktop/prueba`) and your Vi
 * **GitHub Docs (`Testing your SSH connection`):** `[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)`
 * **Cloudflare Pages (`Deploy a VitePress site`):** `[https://developers.cloudflare.com/pages/framework-guides/deploy-a-vitepress-site/](https://developers.cloudflare.com/pages/framework-guides/deploy-a-vitepress-site/)`
 * **VitePress Deployment Guide:** `[https://vitepress.dev/guide/deploy](https://vitepress.dev/guide/deploy)`
+
+
+
+---
+
+Three things happened in that output:
+
+1. **`error: remote origin already exists.`**: The repository already had an `origin` remote configured from an earlier command, so `git remote add origin` did not overwrite it.
+2. **`nothing to commit, working tree clean`**: Your changes were already committed on a previous run.
+3. **`git@github.com: Permission denied (publickey).`**: Git tried to connect using `git@github.com` rather than using the `github-raco` SSH host alias (or `github-raco` is not defined in `~/.ssh/config` / its public key is not added to the `raconobe` GitHub account).
+
+---
+
+### Step-by-Step Fix
+
+1. **Point origin to the github-raco SSH Host Alias:** 1 min.
+Update the existing `origin` remote URL so it uses `github-raco`:
+
+```bash
+git remote set-url origin git@github-raco:raconobe/web-ai-roadmap.git
+git remote -v
+
+```
+
+*Verification:* `git remote -v` shows both `fetch` and `push` pointing to `git@github-raco:raconobe/web-ai-roadmap.git`.
+
+
+2. **Verify ~/.ssh/config and Test the github-raco Alias:** 1 min.
+Check your `~/.ssh/config` entry for `Host github-raco` and test SSH authentication against that alias:
+
+```bash
+cat ~/.ssh/config
+ssh -T git@github-raco
+
+```
+
+*Verification:* `~/.ssh/config` has a `Host github-raco` block with `HostName github.com` and the matching `IdentityFile` for `raconobe`, and `ssh -T git@github-raco` authenticates without `Permission denied (publickey)`.
+
+
+3. **Confirm Repository Exists on GitHub and Push:** 1 min.
+Make sure `raconobe/web-ai-roadmap` already exists on the `raconobe` GitHub account, then push `main`:
+
+```bash
+git push -u origin main
+
+```
+
+*Verification:* The push completes cleanly and your files appear on `[https://github.com/raconobe/web-ai-roadmap](https://github.com/raconobe/web-ai-roadmap)`.
+
+
+### Helpful Video & Official Docs
+
+* **Video Walkthrough (GitHub SSH Keys & Setup on Linux):** `[https://www.youtube.com/results?search_query=github+ssh+key+setup+linux+multiple+accounts](https://www.youtube.com/results?search_query=github+ssh+key+setup+linux+multiple+accounts)`
+* **GitHub Docs (`Testing your SSH connection`):** `[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)`
+* **GitHub Docs (`Managing remote repositories`):** `[https://docs.github.com/en/get-started/git-basics/managing-remote-repositories](https://docs.github.com/en/get-started/git-basics/managing-remote-repositories)`
