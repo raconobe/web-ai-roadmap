@@ -122,6 +122,7 @@ function buildSectionSidebar(sectionFolder: string): DefaultTheme.SidebarItem[] 
 
 export default defineConfig({
   srcDir: srcDirRelative,
+  base: './',
   outDir: './.vitepress/dist',
   title: 'Web & AI Roadmap',
   description: 'Structured roadmap and reference notes for Frontend, Backend, Coding Languages, and AI Development.',
