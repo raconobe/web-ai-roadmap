@@ -80,7 +80,7 @@ git init
 git add .
 git commit -m "Initial VitePress roadmap site"
 git branch -M main
-git remote add origin git@github.com-raco:raconobe/web-ai-roadmap.git
+git remote add origin git@github-raco:raconobe/web-ai-roadmap.git
 git push -u origin main
 ```
 
