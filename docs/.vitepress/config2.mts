@@ -1,20 +1,3 @@
-Yes—you can auto-generate your per-folder VitePress sidebars using **Node.js's built-in `node:fs` and `node:path` modules** directly inside `docs/.vitepress/config.mts`, with **zero third-party plugins or extra npm packages** installed.
-
-### How It Works Without Extra Tools
-
-Because `.vitepress/config.mts` runs in Node.js when VitePress starts or builds:
-
-1. You read your `srcDir` (`docs/src`) subfolders (like `frontend`, `backend`, `coding-language`, `ai-development`).
-2. Inside each section folder, each topic subfolder (`html`, `css`, `javascript`, etc.) becomes a sidebar group (`text`), and its `.md` files (excluding `index.md`) become the `items` array with `/<section>/<topic>/<slug>` links.
-3. Labels are derived cleanly from `# Title` in the Markdown file or formatted from the filename (`chapter1` -> `Chapter 1`).
-
----
-
-### Complete `docs/.vitepress/config.mts` (Zero-Dependency Auto-Sidebar)
-
-Here is a complete, ready-to-paste `docs/.vitepress/config.mts` using only built-in `node:fs` and `node:path` (and keeping your exact `nav`, `logo`, and `socialLinks`):
-
-```ts
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -24,16 +7,72 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const srcDirRelative = './src'
 const srcAbsDir = path.resolve(__dirname, '..', srcDirRelative)
 
+
+
 function formatSlug(name: string): string {
   return name
     .replace(/[-_]+/g, ' ')
     .replace(/\b\w/g, (ch) => ch.toUpperCase())
 }
 
+function stripQuotes(value: string): string {
+  const trimmed = value.trim()
+  if (
+    (trimmed.startsWith("'") && trimmed.endsWith("'")) ||
+    (trimmed.startsWith('"') && trimmed.endsWith('"'))
+  ) {
+    return trimmed.slice(1, -1).trim()
+  }
+  return trimmed
+}
+
+function parseFrontmatterBlock(content: string): Record<string, string> {
+  const normalized = content.replace(/\r\n/g, '\n')
+  const match = normalized.match(/^---\n([\s\S]*?)\n---(?:\n|$)/)
+  if (!match) {
+    return {}
+  }
+
+  const data: Record<string, string> = {}
+  const lines = match[1].split('\n')
+
+  for (const line of lines) {
+    const keyMatch = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/)
+    if (!keyMatch) {
+      continue
+    }
+    const key = keyMatch[1]
+    const rawValue = keyMatch[2].trim()
+    if (rawValue) {
+      data[key] = stripQuotes(rawValue)
+    }
+  }
+
+  return data
+}
+
 function getMarkdownTitle(filePath: string, fallbackSlug: string): string {
   const content = fs.readFileSync(filePath, 'utf-8')
-  const match = content.match(/^#\s+(.+)$/m)
-  return match ? match[1].trim() : formatSlug(fallbackSlug)
+  const frontmatter = parseFrontmatterBlock(content)
+
+  if (frontmatter.sidebarTitle) {
+    return frontmatter.sidebarTitle
+  }
+
+  if (frontmatter.title) {
+    return frontmatter.title
+  }
+
+  const withoutFrontmatter = content
+    .replace(/\r\n/g, '\n')
+    .replace(/^---\n[\s\S]*?\n---(?:\n|$)/, '')
+
+  const headingMatch = withoutFrontmatter.match(/^#\s+(.+)$/m)
+  if (headingMatch) {
+    return headingMatch[1].trim()
+  }
+
+  return formatSlug(fallbackSlug)
 }
 
 function buildSectionSidebar(sectionFolder: string): DefaultTheme.SidebarItem[] {
@@ -85,7 +124,13 @@ function buildSectionSidebar(sectionFolder: string): DefaultTheme.SidebarItem[] 
 
 export default defineConfig({
   srcDir: srcDirRelative,
+  base: './',
+  outDir: './.vitepress/dist',
   title: 'Web & AI Roadmap',
+head: [
+    ['link', { rel: 'manifest', href: `${process.env.VITEPRESS_BASE || '/'}manifest.webmanifest` }],
+    ['meta', { name: 'theme-color', content: '#3451b2' }]
+  ],
   description: 'Structured roadmap and reference notes for Frontend, Backend, Coding Languages, and AI Development.',
   themeConfig: {
     logo: '/logo.svg',
@@ -141,26 +186,3 @@ export default defineConfig({
     ]
   }
 })
-
-```
-
----
-
-### Step-by-Step Verification
-
-1. **Replace `docs/.vitepress/config.mts**` with the code above and save (`Ctrl + S`).
-* *Verification:* No extra packages were added to `package.json`, and your dev server (`npm run docs:dev`) reloads with zero TypeScript or Node errors.
-
-
-2. **Test adding a new `.md` file** (for example `docs/src/coding-language/python/chapter2.md` with `# Chapter 2: Modules & Packages`).
-* *Verification:* Save the new `.md` file and open `/coding-language/python/chapter1`—**Chapter 2: Modules & Packages** appears automatically in the Python sidebar group without editing `config.mts`.
-
-
-3. **Note on filename sorting:** Because `localeCompare` sorts alphabetically, `chapter1.md`, `chapter2.md`, and `chapter3.md` stay in order, whereas `chapter10.md` would sort before `chapter2.md` alphabetically unless you name files with zero-padded prefixes like `01-basics.md`, `02-functions.md`, `10-advanced.md`.
-
-### Official Reference
-
-* **VitePress Config File (`Node APIs in Config`):** `[https://vitepress.dev/guide/configuration](https://vitepress.dev/guide/configuration)`
-* **VitePress Default Theme (`Sidebar`):** `[https://vitepress.dev/reference/default-theme-sidebar](https://vitepress.dev/reference/default-theme-sidebar)`
-
-Would you like to adjust the folder/title display names (such as `nodejs` -> `Node.js` or `cpp` -> `C / C++`) or keep it as-is and add your remaining chapters?

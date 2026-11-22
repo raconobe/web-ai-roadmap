@@ -1,15 +1,13 @@
-import { onMounted } from 'vue'
+import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
+import type { Theme } from 'vitepress'
+import PwaReloadPrompt from './PwaReloadPrompt.vue'
 
 export default {
   extends: DefaultTheme,
-  setup() {
-    onMounted(() => {
-      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-        const base = import.meta.env.BASE_URL || '/'
-        const swUrl = `${base.replace(/\/$/, '')}/sw.js`
-        navigator.serviceWorker.register(swUrl).catch(() => {})
-      }
+  Layout() {
+    return h(DefaultTheme.Layout, null, {
+      'layout-bottom': () => h(PwaReloadPrompt)
     })
   }
-}
+} satisfies Theme

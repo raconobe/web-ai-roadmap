@@ -11,3 +11,4 @@ This site organizes core engineering notes into lightweight, easy-to-maintain Ma
 * **Top Navigation Bar:** Quick access to each roadmap area, hub overview, and standalone pages.
 * **Per-Folder Sidebars:** Focused navigation inside each subject area so menus stay concise.
 * **Chapter-to-Chapter Flow:** Bottom **Previous** and **Next** links guide step-by-step progression.
+* **Chapter-to-Chapter Flow:** Bottom **Previous** and **Next** links guide step-by-step progression.
