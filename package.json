@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@vite-pwa/vitepress": "^2.0.5",
+    "magicast": "^0.5.5",
     "vitepress": "^2.0.0-alpha.21"
   },
   "scripts": {
