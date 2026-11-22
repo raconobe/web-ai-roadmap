@@ -2,12 +2,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type DefaultTheme } from 'vitepress'
-import { withPwa } from '@vite-pwa/vitepress'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const srcDirRelative = './src'
 const srcAbsDir = path.resolve(__dirname, '..', srcDirRelative)
-const basePath = process.env.VITEPRESS_BASE || '/'
+
+
 
 function formatSlug(name: string): string {
   return name
@@ -122,87 +122,67 @@ function buildSectionSidebar(sectionFolder: string): DefaultTheme.SidebarItem[] 
   return groups
 }
 
-export default withPwa(
-  defineConfig({
-    base: basePath,
-    srcDir: srcDirRelative,
-    srcExclude: ['**/old/**'],
-    //outDir: './.vitepress/dist',
-    title: 'Web & AI Roadmap',
-    description: 'Structured roadmap and reference notes for Frontend, Backend, Coding Languages, and AI Development.',
-    head: [
-      ['link', { rel: 'manifest', href: `${basePath}manifest.webmanifest` }],
-      ['meta', { name: 'theme-color', content: '#3451b2' }]
-    ],
-    themeConfig: {
-      logo: '/logo.svg',
-      nav: [
-        { text: 'Home', link: '/' },
-        { text: 'About', link: '/about' },
-        {
-          text: 'FrontEnd',
-          items: [
-            { text: 'FrontEnd Overview', link: '/frontend/' },
-            { text: 'HTML', link: '/frontend/html/chapter1' },
-            { text: 'CSS', link: '/frontend/css/chapter1' },
-            { text: 'JavaScript', link: '/frontend/javascript/chapter1' }
-          ]
-        },
-        {
-          text: 'Backend',
-          items: [
-            { text: 'Backend Overview', link: '/backend/' },
-            { text: 'Node.js', link: '/backend/nodejs/chapter1' },
-            { text: 'Express', link: '/backend/express/chapter1' },
-            { text: 'PHP', link: '/backend/php/chapter1' }
-          ]
-        },
-        {
-          text: 'Coding Language',
-          items: [
-            { text: 'Languages Overview', link: '/coding-language/' },
-            { text: 'Python', link: '/coding-language/python/chapter1' },
-            { text: 'TypeScript', link: '/coding-language/typescript/chapter1' },
-            { text: 'C / C++', link: '/coding-language/cpp/chapter1' }
-          ]
-        },
-        {
-          text: 'AI Development',
-          items: [
-            { text: 'AI Overview', link: '/ai-development/' },
-            { text: 'Foundations', link: '/ai-development/foundations/chapter1' },
-            { text: 'Applied Models', link: '/ai-development/applied-models/chapter1' },
-            { text: 'Workflows & Agents', link: '/ai-development/workflows/chapter1' }
-          ]
-        },
-        { text: 'Contact', link: '/contact' }
-      ],
-      sidebar: {
-        '/frontend/': buildSectionSidebar('frontend'),
-        '/backend/': buildSectionSidebar('backend'),
-        '/coding-language/': buildSectionSidebar('coding-language'),
-        '/ai-development/': buildSectionSidebar('ai-development')
+export default defineConfig({
+  srcDir: srcDirRelative,
+  base: './',
+  outDir: './.vitepress/dist',
+  title: 'Web & AI Roadmap',
+head: [
+    ['link', { rel: 'manifest', href: `${process.env.VITEPRESS_BASE || '/'}manifest.webmanifest` }],
+    ['meta', { name: 'theme-color', content: '#3451b2' }]
+  ],
+  description: 'Structured roadmap and reference notes for Frontend, Backend, Coding Languages, and AI Development.',
+  themeConfig: {
+    logo: '/logo.svg',
+    nav: [
+      { text: 'Home', link: '/' },
+      { text: 'About', link: '/about' },
+      {
+        text: 'FrontEnd',
+        items: [
+          { text: 'FrontEnd Overview', link: '/frontend/' },
+          { text: 'HTML', link: '/frontend/html/chapter1' },
+          { text: 'CSS', link: '/frontend/css/chapter1' },
+          { text: 'JavaScript', link: '/frontend/javascript/chapter1' }
+        ]
       },
-      socialLinks: [
-        { icon: 'github', link: 'https://github.com/raconobe/web-ai-roadmap' }
-      ]
+      {
+        text: 'Backend',
+        items: [
+          { text: 'Backend Overview', link: '/backend/' },
+          { text: 'Node.js', link: '/backend/nodejs/chapter1' },
+          { text: 'Express', link: '/backend/express/chapter1' },
+          { text: 'PHP', link: '/backend/php/chapter1' }
+        ]
+      },
+      {
+        text: 'Coding Language',
+        items: [
+          { text: 'Languages Overview', link: '/coding-language/' },
+          { text: 'Python', link: '/coding-language/python/chapter1' },
+          { text: 'TypeScript', link: '/coding-language/typescript/chapter1' },
+          { text: 'C / C++', link: '/coding-language/cpp/chapter1' }
+        ]
+      },
+      {
+        text: 'AI Development',
+        items: [
+          { text: 'AI Overview', link: '/ai-development/' },
+          { text: 'Foundations', link: '/ai-development/foundations/chapter1' },
+          { text: 'Applied Models', link: '/ai-development/applied-models/chapter1' },
+          { text: 'Workflows & Agents', link: '/ai-development/workflows/chapter1' }
+        ]
+      },
+      { text: 'Contact', link: '/contact' }
+    ],
+    sidebar: {
+      '/frontend/': buildSectionSidebar('frontend'),
+      '/backend/': buildSectionSidebar('backend'),
+      '/coding-language/': buildSectionSidebar('coding-language'),
+      '/ai-development/': buildSectionSidebar('ai-development')
     },
-pwa: {
-  registerType: 'autoUpdate',
-  manifest: {
-    name: 'Web & AI Roadmap',
-    short_name: 'Web AI Roadmap',
-    theme_color: '#3451b2',
-    background_color: '#ffffff',
-    display: 'standalone',
-    start_url: './',
-    scope: './',
-    icons: [
-      { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-      { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-      { src: 'logo.svg', sizes: 'any', type: 'image/svg+xml' }
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
     ]
   }
-}
-  })
-)
+})
