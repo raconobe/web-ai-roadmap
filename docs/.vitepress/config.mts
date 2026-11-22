@@ -7,6 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const srcDirRelative = './src'
 const srcAbsDir = path.resolve(__dirname, '..', srcDirRelative)
 
+
+
 function formatSlug(name: string): string {
   return name
     .replace(/[-_]+/g, ' ')
@@ -125,6 +127,10 @@ export default defineConfig({
   base: './',
   outDir: './.vitepress/dist',
   title: 'Web & AI Roadmap',
+  head: [
+    ['link', { rel: 'manifest', href: `${process.env.VITEPRESS_BASE || '/'}manifest.webmanifest` }],
+    ['meta', { name: 'theme-color', content: '#3451b2' }]
+  ],
   description: 'Structured roadmap and reference notes for Frontend, Backend, Coding Languages, and AI Development.',
   themeConfig: {
     logo: '/logo.svg',
