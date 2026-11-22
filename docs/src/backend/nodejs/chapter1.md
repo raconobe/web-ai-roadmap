@@ -2,7 +2,7 @@
 title: Node.js Chapter 1 - Runtime, Modules & Event Loop
 description: Placeholder notes for Node runtime execution, ES/CommonJS modules, and event loop phases.
 next:
-  text: 'Node.js Chapter 2: File System, Streams & Environment Config'
+  text: 'Node.js Chap  ter 2: File System, Streams & Environment Config'
   link: '/backend/nodejs/chapter2'
 ---
 
@@ -12,5 +12,5 @@ next:
 
 ## Planned Topics
 * Running scripts with `node` and `package.json` scripts
-* ES modules (`import`/`export`) vs. CommonJS (`require`/`module.exports`)
+* ES modules (`import`/`export`) vs. CommonJS  (`require`/`module.exports`)
 * Non-blocking I/O and event loop basics
